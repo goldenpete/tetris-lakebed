@@ -262,7 +262,7 @@ function RotatingBlock() {
 
 function GoogleSignInButton({ onClick }: { onClick?: () => void }) {
   return (
-    <SignInWithGoogle className="inline-flex items-center gap-3 bg-white text-gray-700 text-sm font-medium px-6 py-2.5 rounded hover:bg-gray-100 transition-colors shadow-sm cursor-pointer">
+    <SignInWithGoogle className="inline-flex items-center gap-3 bg-white text-gray-700 text-sm font-medium px-6 py-2.5 rounded hover:bg-gray-100 transition-all shadow-sm cursor-pointer active:scale-95 active:translate-y-px">
       <svg className="w-5 h-5" viewBox="0 0 24 24" xmlns="http://www.w3.org/2000/svg">
         <path fill="#4285F4" d="M22.56 12.25c0-.78-.07-1.53-.2-2.25H12v4.26h5.92a5.06 5.06 0 0 1-2.2 3.32v2.77h3.57c2.08-1.92 3.28-4.74 3.28-8.1z"/>
         <path fill="#34A853" d="M12 23c2.97 0 5.46-.98 7.28-2.66l-3.57-2.77c-.98.66-2.23 1.06-3.71 1.06-2.86 0-5.29-1.93-6.16-4.53H2.18v2.84C3.99 20.53 7.7 23 12 23z"/>
@@ -294,8 +294,8 @@ function MenuPage() {
   return (
     <div className="relative flex flex-col items-center justify-center min-h-[70vh] overflow-hidden">
       <MenuBlocks />
-      <h1 className="text-5xl font-bold tracking-tight text-white mb-2 relative z-10" style={{ fontFamily: "'Merriweather', serif" }}>Tetris</h1>
-      <p className="text-sm text-neutral-500 mb-10 tracking-widest uppercase relative z-10">Multiplayer</p>
+      <h1 className="flex items-center gap-3 text-5xl font-bold tracking-tight text-white mb-2 relative z-10" style={{ fontFamily: "'Merriweather', serif" }}><img src="https://i.imgur.com/OPHIrLL.png" alt="" className="h-10 w-auto" />Tetris</h1>
+      <p className="text-sm text-neutral-500 mb-10 tracking-widest relative z-10" style={{ fontFamily: "'Merriweather', serif" }}>Multiplayer</p>
 
       {isSearching ? (
         <div className="flex flex-col items-center gap-5 relative z-10">
@@ -331,7 +331,10 @@ function MenuPage() {
           }} className="px-12 py-2 border border-neutral-700 text-neutral-400 text-sm hover:text-white hover:border-neutral-500 transition-all active:scale-95 active:translate-y-px disabled:opacity-50 disabled:cursor-not-allowed">
             Battle Royale (4 Players)
           </button>
-          <button onClick={() => setShowStats(true)} className="px-12 py-2 border border-neutral-700 text-neutral-400 text-sm hover:text-white hover:border-neutral-500 transition-all active:scale-95 active:translate-y-px relative z-10">
+          <button onClick={() => {
+            if (isGuest) { setShowLoginPrompt(true); return; }
+            setShowStats(true);
+          }} className="px-12 py-2 border border-neutral-700 text-neutral-400 text-sm hover:text-white hover:border-neutral-500 transition-all active:scale-95 active:translate-y-px relative z-10">
             Stats
           </button>
         </div>
@@ -768,6 +771,29 @@ export function App() {
   const [showSettings, setShowSettings] = useState(false);
 
   useEffect(() => {
+    document.title = 'Tetris Multiplayer';
+  }, []);
+
+  useEffect(() => {
+    const links: HTMLLinkElement[] = [];
+    const favicons = [
+      { rel: 'icon', type: 'image/png', sizes: '16x16', href: 'https://i.imgur.com/cD8ui8D.png' },
+      { rel: 'icon', type: 'image/png', sizes: '32x32', href: 'https://i.imgur.com/R6HM83k.png' },
+      { rel: 'apple-touch-icon', sizes: '180x180', href: 'https://i.imgur.com/prCEZAT.png' },
+    ];
+    for (const f of favicons) {
+      const link = document.createElement('link');
+      link.rel = f.rel;
+      if (f.type) link.type = f.type;
+      if (f.sizes) link.sizes = f.sizes;
+      link.href = f.href;
+      document.head.appendChild(link);
+      links.push(link);
+    }
+    return () => { for (const link of links) document.head.removeChild(link); };
+  }, []);
+
+  useEffect(() => {
     const currentId = myStatus?.gameId || null;
     if (currentId) {
       lastGameIdRef.current = currentId;
@@ -795,12 +821,12 @@ export function App() {
 
   return (
     <Router>
-      <style>{`@import url('https://fonts.googleapis.com/css2?family=Merriweather:wght@700&display=swap'); @keyframes fall { from { transform: translateY(0); opacity: 0.12; } to { transform: translateY(200vh); opacity: 0; } }`}</style>
+      <style>{`@import url('https://fonts.googleapis.com/css2?family=Merriweather:wght@400;700&display=swap'); @keyframes fall { from { transform: translateY(0); opacity: 0.12; } to { transform: translateY(200vh); opacity: 0; } }`}</style>
       <div className="min-h-screen bg-black text-white">
         <header className="border-b border-neutral-800">
           <div className="max-w-4xl mx-auto px-4 py-3 flex items-center">
             <div className="flex-1">
-              <span className="font-bold text-sm tracking-tight" style={{ fontFamily: "'Merriweather', serif" }}>Tetris</span>
+              <span className="flex items-center gap-1.5 font-bold text-sm tracking-tight" style={{ fontFamily: "'Merriweather', serif" }}><img src="https://i.imgur.com/OPHIrLL.png" alt="" className="h-5 w-auto" />Tetris <span className="text-white/40 font-normal">Multiplayer</span></span>
             </div>
             <div className="flex-1 text-center">
               <a href="https://lakebed.dev/" target="_blank" rel="noopener noreferrer" className="text-xs text-neutral-500">
@@ -828,11 +854,12 @@ export function App() {
                   </button>
                   {showProfileMenu && (
                     <div className="absolute right-0 top-full mt-2 w-36 bg-black border border-white/10 rounded shadow-lg overflow-hidden z-50">
-                      <button onClick={() => { setShowSettings(true); setShowProfileMenu(false); }} className="flex items-center gap-2 w-full text-left px-4 py-2 text-xs text-white/50 hover:text-white hover:bg-white/5 transition-colors">
+                      <button onClick={() => { setShowSettings(true); setShowProfileMenu(false); }} className="flex items-center gap-2 w-full text-left px-3 py-1.5 text-xs text-white/50 hover:text-white hover:bg-white/5 transition-colors">
                         <svg className="w-3.5 h-3.5" fill="none" stroke="currentColor" viewBox="0 0 24 24" strokeWidth="2"><path strokeLinecap="round" strokeLinejoin="round" d="M10.325 4.317c.426-1.756 2.924-1.756 3.35 0a1.724 1.724 0 002.573 1.066c1.543-.94 3.31.826 2.37 2.37a1.724 1.724 0 001.065 2.572c1.756.426 1.756 2.924 0 3.35a1.724 1.724 0 00-1.066 2.573c.94 1.543-.826 3.31-2.37 2.37a1.724 1.724 0 00-2.572 1.065c-.426 1.756-2.924 1.756-3.35 0a1.724 1.724 0 00-2.573-1.066c-1.543.94-3.31-.826-2.37-2.37a1.724 1.724 0 00-1.065-2.572c-1.756-.426-1.756-2.924 0-3.35a1.724 1.724 0 001.066-2.573c-.94-1.543.826-3.31 2.37-2.37.996.608 2.296.07 2.572-1.065z"/><path strokeLinecap="round" strokeLinejoin="round" d="M15 12a3 3 0 11-6 0 3 3 0 016 0z"/></svg>
                         Settings
                       </button>
-                      <button onClick={() => { signOut(); setShowProfileMenu(false); }} className="flex items-center gap-2 w-full text-left px-4 py-2 text-xs text-white/50 hover:text-white hover:bg-white/5 transition-colors">
+                      <div className="h-px bg-white/5 mx-2" />
+                      <button onClick={() => { signOut(); setShowProfileMenu(false); }} className="flex items-center gap-2 w-full text-left px-3 py-1.5 text-xs text-white/50 hover:text-white hover:bg-white/5 transition-colors">
                         <svg className="w-3.5 h-3.5" fill="none" stroke="currentColor" viewBox="0 0 24 24" strokeWidth="2"><path strokeLinecap="round" strokeLinejoin="round" d="M17 16l4-4m0 0l-4-4m4 4H7m6 4v1a3 3 0 01-3 3H6a3 3 0 01-3-3V7a3 3 0 013-3h4a3 3 0 013 3v1"/></svg>
                         Sign out
                       </button>
