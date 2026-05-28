@@ -331,7 +331,7 @@ function MenuPage() {
           }} className="px-12 py-2 border border-neutral-700 text-neutral-400 text-sm hover:text-white hover:border-neutral-500 transition-all active:scale-95 active:translate-y-px disabled:opacity-50 disabled:cursor-not-allowed">
             Battle Royale (4 Players)
           </button>
-          <button onClick={() => setShowStats(true)} className="mt-4 text-xs text-neutral-500 hover:text-neutral-300 transition-colors relative z-10">
+          <button onClick={() => setShowStats(true)} className="px-12 py-2 border border-neutral-700 text-neutral-400 text-sm hover:text-white hover:border-neutral-500 transition-all active:scale-95 active:translate-y-px relative z-10">
             Stats
           </button>
         </div>
