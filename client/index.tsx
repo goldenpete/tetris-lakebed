@@ -338,11 +338,13 @@ function MenuPage() {
 
       {showLoginPrompt && (
         <div className="fixed inset-0 bg-black/80 flex items-center justify-center z-50">
-          <div className="bg-neutral-900 border border-neutral-700 rounded-lg p-8 flex flex-col items-center gap-5 max-w-sm w-full mx-4 shadow-2xl">
-            <p className="text-white font-medium text-lg">Sign in to play</p>
-            <p className="text-sm text-neutral-500 text-center">You need to be signed in to join multiplayer matches.</p>
+          <div className="bg-black border border-white/20 rounded p-8 flex flex-col items-center gap-6 max-w-sm w-full mx-4 shadow-2xl">
+            <div className="text-center space-y-1">
+              <p className="text-white font-medium text-lg">Sign in to play</p>
+              <p className="text-sm text-white/50">You need to be signed in to join multiplayer matches.</p>
+            </div>
             <GoogleSignInButton />
-            <button onClick={() => setShowLoginPrompt(false)} className="text-xs text-neutral-500 hover:text-white underline transition-colors">Cancel</button>
+            <button onClick={() => setShowLoginPrompt(false)} className="px-8 py-2 border border-white/20 text-white/60 text-sm hover:text-white hover:border-white/40 transition-all active:scale-95 active:translate-y-px">Cancel</button>
           </div>
         </div>
       )}
@@ -350,43 +352,43 @@ function MenuPage() {
       {showStats && (
         <>
           <div className="fixed inset-0 bg-black/40 z-40" onClick={() => setShowStats(false)} />
-          <div className="fixed top-0 right-0 bottom-0 w-72 bg-neutral-900 border-l border-neutral-800 shadow-2xl z-50 overflow-y-auto">
+          <div className="fixed top-0 right-0 bottom-0 w-72 bg-black border-l border-white/10 shadow-2xl z-50 overflow-y-auto">
             <div className="p-6">
               <div className="flex items-center justify-between mb-6">
-                <h3 className="text-sm font-bold tracking-widest uppercase text-neutral-300">Stats</h3>
-                <button onClick={() => setShowStats(false)} className="text-neutral-500 hover:text-white transition-colors text-xs">Close</button>
+                <h3 className="text-sm font-bold tracking-widest uppercase text-white/70">Stats</h3>
+                <button onClick={() => setShowStats(false)} className="text-white/40 hover:text-white transition-colors text-xs">Close</button>
               </div>
 
               {isGuest ? (
-                <p className="text-xs text-neutral-500">Sign in to track your stats.</p>
+                <p className="text-xs text-white/40">Sign in to track your stats.</p>
               ) : profile ? (
                 <div className="space-y-6">
                   <div className="grid grid-cols-2 gap-3">
-                    <div className="bg-neutral-800/50 rounded p-3 text-center">
+                    <div className="border border-white/10 rounded p-3 text-center">
                       <p className="text-2xl font-mono text-white">{profile.wins}</p>
-                      <p className="text-xs text-neutral-500 mt-1">Wins</p>
+                      <p className="text-xs text-white/40 mt-1">Wins</p>
                     </div>
-                    <div className="bg-neutral-800/50 rounded p-3 text-center">
+                    <div className="border border-white/10 rounded p-3 text-center">
                       <p className="text-2xl font-mono text-white">{profile.gamesPlayed}</p>
-                      <p className="text-xs text-neutral-500 mt-1">Games</p>
+                      <p className="text-xs text-white/40 mt-1">Games</p>
                     </div>
-                    <div className="bg-neutral-800/50 rounded p-3 text-center">
+                    <div className="border border-white/10 rounded p-3 text-center">
                       <p className="text-2xl font-mono text-white">{profile.winRate}%</p>
-                      <p className="text-xs text-neutral-500 mt-1">Win Rate</p>
+                      <p className="text-xs text-white/40 mt-1">Win Rate</p>
                     </div>
-                    <div className="bg-neutral-800/50 rounded p-3 text-center">
+                    <div className="border border-white/10 rounded p-3 text-center">
                       <p className="text-2xl font-mono text-white">{(() => { const idx = (leaderboard || []).findIndex(l => l.name === profile.displayName); return idx >= 0 ? idx + 1 : '—'; })()}</p>
-                      <p className="text-xs text-neutral-500 mt-1">Rank</p>
+                      <p className="text-xs text-white/40 mt-1">Rank</p>
                     </div>
                   </div>
 
                   <div>
-                    <h4 className="text-xs font-bold tracking-widest uppercase text-neutral-500 mb-3">Leaderboard</h4>
+                    <h4 className="text-xs font-bold tracking-widest uppercase text-white/40 mb-3">Leaderboard</h4>
                     <div className="space-y-2">
                       {(leaderboard || []).map((entry) => (
-                        <div key={entry.rank} className={`flex items-center justify-between text-xs py-1.5 px-2 rounded ${entry.name === profile.displayName ? 'bg-neutral-800 text-white' : 'text-neutral-400'}`}>
+                        <div key={entry.rank} className={`flex items-center justify-between text-xs py-1.5 px-2 rounded ${entry.name === profile.displayName ? 'border border-white/20 text-white' : 'text-white/50'}`}>
                           <span className="flex items-center gap-2">
-                            <span className="text-neutral-500 w-4">{entry.rank}</span>
+                            <span className="text-white/30 w-4">{entry.rank}</span>
                             <span>{friendlyName(entry.name)}</span>
                           </span>
                           <span className="font-mono">{entry.wins}</span>
@@ -396,7 +398,7 @@ function MenuPage() {
                   </div>
                 </div>
               ) : (
-                <p className="text-xs text-neutral-500">Loading stats...</p>
+                <p className="text-xs text-white/40">Loading stats...</p>
               )}
             </div>
           </div>
