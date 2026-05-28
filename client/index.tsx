@@ -276,7 +276,8 @@ function GoogleSignInButton({ onClick }: { onClick?: () => void }) {
 
 function MenuPage() {
   const auth = useAuth();
-  const profile = useQuery<{ wins: number; gamesPlayed: number; winRate: number; displayName: string } | null>("myProfile");
+  const profile = useQuery<{ wins: number; gamesPlayed: number; winRate: number; displayName: string; leaderboardVisible: boolean } | null>("myProfile");
+  const toggleVisibility = useMutation<[{ visible: boolean }], void>("toggleLeaderboardVisibility");
   const leaderboard = useQuery<{ rank: number; name: string; wins: number }[]>("leaderboard");
   const myStatus = useQuery<{ status: 'idle' | 'searching' | 'in_game'; gameId: string | null }>("myStatus");
   const queuePlayers = useQuery<string[]>("queuePlayers");
@@ -380,6 +381,19 @@ function MenuPage() {
                       <p className="text-2xl font-mono text-white">{(() => { const idx = (leaderboard || []).findIndex(l => l.name === profile.displayName); return idx >= 0 ? idx + 1 : '—'; })()}</p>
                       <p className="text-xs text-white/40 mt-1">Rank</p>
                     </div>
+                  </div>
+
+                  <div className="flex items-center justify-between">
+                    <h4 className="text-xs font-bold tracking-widest uppercase text-white/40">Leaderboard</h4>
+                    <button onClick={async () => {
+                      if (!profile) return;
+                      try { await toggleVisibility({ visible: !profile.leaderboardVisible }); } catch (e) { console.error('toggle failed:', e); }
+                    }} className="flex items-center gap-2 text-xs text-white/50 hover:text-white transition-colors">
+                      <span className="text-white/30">{profile.leaderboardVisible ? 'Visible' : 'Hidden'}</span>
+                      <span className={`relative inline-flex h-4 w-7 items-center rounded-full transition-colors ${profile.leaderboardVisible ? 'bg-white/30' : 'bg-white/10'}`}>
+                        <span className={`inline-block h-2.5 w-2.5 rounded-full bg-white transform transition-transform ${profile.leaderboardVisible ? 'translate-x-3.5' : 'translate-x-1'}`} />
+                      </span>
+                    </button>
                   </div>
 
                   <div>

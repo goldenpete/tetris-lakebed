@@ -19,6 +19,7 @@ export default capsule({
       currentGameId: string().default(''),
       wins: string(),
       gamesPlayed: string().default('0'),
+      leaderboardVisible: boolean().default(true),
     }),
 
     // Matchmaking queues
@@ -84,13 +85,13 @@ export default capsule({
       if (!player) return null;
       const wins = parseInt(player.wins || '0');
       const gamesPlayed = parseInt(player.gamesPlayed || '0');
-      return { wins, gamesPlayed, winRate: gamesPlayed > 0 ? Math.round((wins / gamesPlayed) * 100) : 0, displayName: player.displayName };
+      return { wins, gamesPlayed, winRate: gamesPlayed > 0 ? Math.round((wins / gamesPlayed) * 100) : 0, displayName: player.displayName, leaderboardVisible: player.leaderboardVisible !== false };
     }),
 
-    // Get leaderboard (top 10 by wins)
+    // Get leaderboard (top 10 visible players by wins)
     leaderboard: query((ctx) => {
       const allPlayers = ctx.db.players.all()
-        .filter(p => !p.isGuest)
+        .filter(p => !p.isGuest && p.leaderboardVisible !== false)
         .sort((a, b) => parseInt(b.wins || '0') - parseInt(a.wins || '0'))
         .slice(0, 10);
       return allPlayers.map((p, i) => ({ rank: i + 1, name: p.displayName, wins: parseInt(p.wins || '0') }));
@@ -510,6 +511,17 @@ export default capsule({
         ctx.db.players.update(player.id, {
           status: 'idle',
           currentGameId: '',
+        });
+      }
+    }),
+
+    // Toggle leaderboard visibility
+    toggleLeaderboardVisibility: mutation((ctx, args: { visible: boolean }) => {
+      const players = ctx.db.players.where("userId", ctx.auth.userId).all();
+      const player = players[0];
+      if (player) {
+        ctx.db.players.update(player.id, {
+          leaderboardVisible: args.visible,
         });
       }
     }),
