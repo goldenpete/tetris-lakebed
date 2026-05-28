@@ -1,0 +1,11 @@
+[build]
+  command = "echo 'No build needed for Lakebed'"
+  publish = "."
+
+[build.environment]
+  NODE_VERSION = "20"
+
+[[redirects]]
+  from = "/*"
+  to = "/index.html"
+  status = 200
