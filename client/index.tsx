@@ -699,6 +699,7 @@ export function App() {
   const myStatus = useQuery<{ status: 'idle' | 'searching' | 'in_game'; gameId: string | null }>("myStatus");
 
   const lastGameIdRef = useRef<string | null>(null);
+  const profileMenuRef = useRef<HTMLDivElement>(null);
   const [dismissed, setDismissed] = useState(false);
   const [showProfileMenu, setShowProfileMenu] = useState(false);
 
@@ -709,6 +710,17 @@ export function App() {
       setDismissed(false);
     }
   }, [myStatus?.gameId]);
+
+  useEffect(() => {
+    if (!showProfileMenu) return;
+    const handleClick = (e: MouseEvent) => {
+      if (profileMenuRef.current && !profileMenuRef.current.contains(e.target as Node)) {
+        setShowProfileMenu(false);
+      }
+    };
+    document.addEventListener('mousedown', handleClick);
+    return () => document.removeEventListener('mousedown', handleClick);
+  }, [showProfileMenu]);
 
   const inGame = myStatus?.status === 'in_game' && myStatus?.gameId;
   const showGamePage = inGame || (!dismissed && !!lastGameIdRef.current);
@@ -743,7 +755,7 @@ export function App() {
                   Sign in with Google
                 </SignInWithGoogle>
               ) : !auth.isLoading ? (
-                <div className="relative">
+                <div ref={profileMenuRef} className="relative">
                   <button onClick={() => setShowProfileMenu(!showProfileMenu)} className="flex items-center gap-1.5 pl-1.5 pr-1 h-7 rounded-full border border-neutral-800 bg-neutral-900/50 hover:bg-neutral-800 transition-colors">
                     <img alt="" className="h-5 w-5 rounded-full bg-neutral-800 object-cover" referrerPolicy="no-referrer" src={auth.picture || ''} />
                     <span className="text-xs text-neutral-400 hidden sm:inline pr-0.5">{friendlyName(auth.displayName)}</span>
