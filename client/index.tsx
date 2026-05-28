@@ -721,8 +721,8 @@ export function App() {
               <span className="font-bold text-sm tracking-tight" style={{ fontFamily: "'Merriweather', serif" }}>Tetris</span>
             </div>
             <div className="flex-1 text-center">
-              <a href="https://lakebed.dev/" target="_blank" rel="noopener noreferrer" className="text-xs text-neutral-500 hover:text-neutral-300 transition-colors">
-                Powered by <span className="text-neutral-400">Lakebed</span>
+              <a href="https://lakebed.dev/" target="_blank" rel="noopener noreferrer" className="text-xs text-neutral-500">
+                Powered by <span className="text-neutral-400 hover:text-white transition-colors">Lakebed</span>
               </a>
             </div>
             <div className="flex-1 flex justify-end items-center gap-3">
