@@ -815,8 +815,8 @@ export function App() {
                     <span className="text-xs text-neutral-400 hidden sm:inline pr-0.5">{friendlyName(auth.displayName)}</span>
                   </button>
                   {showProfileMenu && (
-                    <div className="absolute right-0 top-full mt-2 w-32 bg-neutral-900 border border-neutral-800 rounded shadow-lg overflow-hidden z-50">
-                      <button onClick={() => { signOut(); setShowProfileMenu(false); }} className="w-full text-left px-4 py-2 text-xs text-neutral-400 hover:text-white hover:bg-neutral-800 transition-colors">Sign out</button>
+                    <div className="absolute right-0 top-full mt-2 w-32 bg-black border border-white/10 rounded shadow-lg overflow-hidden z-50">
+                      <button onClick={() => { signOut(); setShowProfileMenu(false); }} className="w-full text-left px-4 py-2 text-xs text-white/50 hover:text-white hover:bg-white/5 transition-colors">Sign out</button>
                     </div>
                   )}
                 </div>
