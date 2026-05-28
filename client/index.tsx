@@ -383,7 +383,7 @@ function MenuPage() {
                     </div>
                   </div>
 
-                  <div className="flex items-center justify-between">
+                  <div className="flex items-center justify-between mb-3">
                     <h4 className="text-xs font-bold tracking-widest uppercase text-white/40">Leaderboard</h4>
                     <button onClick={async () => {
                       if (!profile) return;
@@ -396,9 +396,7 @@ function MenuPage() {
                     </button>
                   </div>
 
-                  <div>
-                    <h4 className="text-xs font-bold tracking-widest uppercase text-white/40 mb-3">Leaderboard</h4>
-                    <div className="space-y-2">
+                  <div className="space-y-2">
                       {(leaderboard || []).map((entry) => (
                         <div key={entry.rank} className={`flex items-center justify-between text-xs py-1.5 px-2 rounded ${entry.name === profile.displayName ? 'border border-white/20 text-white' : 'text-white/50'}`}>
                           <span className="flex items-center gap-2">
@@ -409,7 +407,6 @@ function MenuPage() {
                         </div>
                       ))}
                     </div>
-                  </div>
                 </div>
               ) : (
                 <p className="text-xs text-white/40">Loading stats...</p>
