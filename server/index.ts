@@ -18,6 +18,7 @@ export default capsule({
       status: string(), // 'idle', 'searching', 'in_game'
       currentGameId: string().default(''),
       wins: string(),
+      gamesPlayed: string().default('0'),
     }),
 
     // Matchmaking queues
@@ -76,11 +77,23 @@ export default capsule({
   },
 
   queries: {
-    // Get current player's profile and wins
+    // Get current player's profile and stats
     myProfile: query((ctx) => {
       const players = ctx.db.players.where("userId", ctx.auth.userId).all();
       const player = players[0];
-      return player ? { wins: parseInt(player.wins || '0'), displayName: player.displayName } : null;
+      if (!player) return null;
+      const wins = parseInt(player.wins || '0');
+      const gamesPlayed = parseInt(player.gamesPlayed || '0');
+      return { wins, gamesPlayed, winRate: gamesPlayed > 0 ? Math.round((wins / gamesPlayed) * 100) : 0, displayName: player.displayName };
+    }),
+
+    // Get leaderboard (top 10 by wins)
+    leaderboard: query((ctx) => {
+      const allPlayers = ctx.db.players.all()
+        .filter(p => !p.isGuest)
+        .sort((a, b) => parseInt(b.wins || '0') - parseInt(a.wins || '0'))
+        .slice(0, 10);
+      return allPlayers.map((p, i) => ({ rank: i + 1, name: p.displayName, wins: parseInt(p.wins || '0') }));
     }),
 
     // Get current player's status and active game
@@ -573,7 +586,16 @@ function finishGame(ctx: any, game: any) {
     }
   }
 
-  // Record win for logged-in players only
+  // Record game played and win for logged-in players
+  for (const pid of allPlayerIds) {
+    const p = ctx.db.players.where("userId", pid).all()[0];
+    if (p && !p.isGuest) {
+      ctx.db.players.update(p.id, {
+        gamesPlayed: String(parseInt(p.gamesPlayed || '0') + 1),
+      });
+    }
+  }
+
   if (winnerId) {
     const winners = ctx.db.players.where("userId", winnerId).all();
     const winner = winners[0];

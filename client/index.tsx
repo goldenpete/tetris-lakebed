@@ -276,7 +276,8 @@ function GoogleSignInButton({ onClick }: { onClick?: () => void }) {
 
 function MenuPage() {
   const auth = useAuth();
-  const profile = useQuery<{ wins: number; displayName: string } | null>("myProfile");
+  const profile = useQuery<{ wins: number; gamesPlayed: number; winRate: number; displayName: string } | null>("myProfile");
+  const leaderboard = useQuery<{ rank: number; name: string; wins: number }[]>("leaderboard");
   const myStatus = useQuery<{ status: 'idle' | 'searching' | 'in_game'; gameId: string | null }>("myStatus");
   const queuePlayers = useQuery<string[]>("queuePlayers");
   const brQueuePlayers = useQuery<string[]>("battleRoyaleQueuePlayers");
@@ -284,9 +285,9 @@ function MenuPage() {
   const joinBRQueue = useMutation<[], void>("joinBattleRoyaleQueue");
   const leaveQueue = useMutation<[], void>("leaveQueue");
   const isSearching = myStatus?.status === 'searching';
-  const hasWins = profile && !auth.isGuest;
   const [queueType, setQueueType] = useState<'1v1' | 'br'>('1v1');
   const [showLoginPrompt, setShowLoginPrompt] = useState(false);
+  const [showStats, setShowStats] = useState(false);
   const isGuest = auth.isGuest;
 
   return (
@@ -294,12 +295,6 @@ function MenuPage() {
       <MenuBlocks />
       <h1 className="text-5xl font-bold tracking-tight text-white mb-2 relative z-10" style={{ fontFamily: "'Merriweather', serif" }}>Tetris</h1>
       <p className="text-sm text-neutral-500 mb-10 tracking-widest uppercase relative z-10">Multiplayer</p>
-
-      {hasWins && (
-        <div className="mb-8 text-sm text-neutral-400 relative z-10">
-          {profile?.wins || 0} wins
-        </div>
-      )}
 
       {isSearching ? (
         <div className="flex flex-col items-center gap-5 relative z-10">
@@ -336,6 +331,9 @@ function MenuPage() {
           }} className="px-12 py-2 border border-neutral-700 text-neutral-400 text-sm hover:text-white hover:border-neutral-500 transition-all active:scale-95 active:translate-y-px disabled:opacity-50 disabled:cursor-not-allowed">
             Battle Royale (4 Players)
           </button>
+          <button onClick={() => setShowStats(true)} className="mt-4 text-xs text-neutral-500 hover:text-neutral-300 transition-colors relative z-10">
+            Stats
+          </button>
         </div>
       )}
 
@@ -348,6 +346,62 @@ function MenuPage() {
             <button onClick={() => setShowLoginPrompt(false)} className="text-xs text-neutral-500 hover:text-white underline transition-colors">Cancel</button>
           </div>
         </div>
+      )}
+
+      {showStats && (
+        <>
+          <div className="fixed inset-0 bg-black/40 z-40" onClick={() => setShowStats(false)} />
+          <div className="fixed top-0 right-0 bottom-0 w-72 bg-neutral-900 border-l border-neutral-800 shadow-2xl z-50 overflow-y-auto">
+            <div className="p-6">
+              <div className="flex items-center justify-between mb-6">
+                <h3 className="text-sm font-bold tracking-widest uppercase text-neutral-300">Stats</h3>
+                <button onClick={() => setShowStats(false)} className="text-neutral-500 hover:text-white transition-colors text-xs">Close</button>
+              </div>
+
+              {isGuest ? (
+                <p className="text-xs text-neutral-500">Sign in to track your stats.</p>
+              ) : profile ? (
+                <div className="space-y-6">
+                  <div className="grid grid-cols-2 gap-3">
+                    <div className="bg-neutral-800/50 rounded p-3 text-center">
+                      <p className="text-2xl font-mono text-white">{profile.wins}</p>
+                      <p className="text-xs text-neutral-500 mt-1">Wins</p>
+                    </div>
+                    <div className="bg-neutral-800/50 rounded p-3 text-center">
+                      <p className="text-2xl font-mono text-white">{profile.gamesPlayed}</p>
+                      <p className="text-xs text-neutral-500 mt-1">Games</p>
+                    </div>
+                    <div className="bg-neutral-800/50 rounded p-3 text-center">
+                      <p className="text-2xl font-mono text-white">{profile.winRate}%</p>
+                      <p className="text-xs text-neutral-500 mt-1">Win Rate</p>
+                    </div>
+                    <div className="bg-neutral-800/50 rounded p-3 text-center">
+                      <p className="text-2xl font-mono text-white">{(() => { const idx = (leaderboard || []).findIndex(l => l.name === profile.displayName); return idx >= 0 ? idx + 1 : '—'; })()}</p>
+                      <p className="text-xs text-neutral-500 mt-1">Rank</p>
+                    </div>
+                  </div>
+
+                  <div>
+                    <h4 className="text-xs font-bold tracking-widest uppercase text-neutral-500 mb-3">Leaderboard</h4>
+                    <div className="space-y-2">
+                      {(leaderboard || []).map((entry) => (
+                        <div key={entry.rank} className={`flex items-center justify-between text-xs py-1.5 px-2 rounded ${entry.name === profile.displayName ? 'bg-neutral-800 text-white' : 'text-neutral-400'}`}>
+                          <span className="flex items-center gap-2">
+                            <span className="text-neutral-500 w-4">{entry.rank}</span>
+                            <span>{friendlyName(entry.name)}</span>
+                          </span>
+                          <span className="font-mono">{entry.wins}</span>
+                        </div>
+                      ))}
+                    </div>
+                  </div>
+                </div>
+              ) : (
+                <p className="text-xs text-neutral-500">Loading stats...</p>
+              )}
+            </div>
+          </div>
+        </>
       )}
 
       <div className="mt-12 text-xs text-neutral-600 text-center leading-relaxed relative z-10">
