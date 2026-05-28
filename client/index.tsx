@@ -313,9 +313,8 @@ function MenuPage() {
                 <span key={i} className="text-xs bg-neutral-800 text-neutral-400 px-2 py-0.5 rounded">{friendlyName(name)}</span>
               ))}
             </div>
-            <p className="text-xs text-neutral-600 mt-2">Open another browser window to test</p>
           </div>
-          <button onClick={async () => { try { await leaveQueue(); } catch (e) { console.error('leaveQueue failed:', e); } }} className="text-xs text-neutral-500 hover:text-white underline mt-2 transition-transform active:scale-95 active:translate-y-px">Cancel</button>
+          <button onClick={async () => { try { await leaveQueue(); } catch (e) { console.error('leaveQueue failed:', e); } }} className="px-12 py-2 border border-neutral-700 text-neutral-400 text-sm hover:text-white hover:border-neutral-500 transition-all active:scale-95 active:translate-y-px">Cancel</button>
         </div>
       ) : (
         <div className="flex flex-col items-center gap-3 relative z-10">
