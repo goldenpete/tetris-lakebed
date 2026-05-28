@@ -754,6 +754,7 @@ export function App() {
   const profileMenuRef = useRef<HTMLDivElement>(null);
   const [dismissed, setDismissed] = useState(false);
   const [showProfileMenu, setShowProfileMenu] = useState(false);
+  const [showSettings, setShowSettings] = useState(false);
 
   useEffect(() => {
     const currentId = myStatus?.gameId || null;
@@ -816,10 +817,10 @@ export function App() {
                   </button>
                   {showProfileMenu && (
                     <div className="absolute right-0 top-full mt-2 w-36 bg-black border border-white/10 rounded shadow-lg overflow-hidden z-50">
-                      <a href="https://www.youtube.com/watch?v=dQw4w9WgXcQ" target="_blank" rel="noopener noreferrer" className="flex items-center gap-2 w-full text-left px-4 py-2 text-xs text-white/50 hover:text-white hover:bg-white/5 transition-colors">
+                      <button onClick={() => { setShowSettings(true); setShowProfileMenu(false); }} className="flex items-center gap-2 w-full text-left px-4 py-2 text-xs text-white/50 hover:text-white hover:bg-white/5 transition-colors">
                         <svg className="w-3.5 h-3.5" fill="none" stroke="currentColor" viewBox="0 0 24 24" strokeWidth="2"><path strokeLinecap="round" strokeLinejoin="round" d="M10.325 4.317c.426-1.756 2.924-1.756 3.35 0a1.724 1.724 0 002.573 1.066c1.543-.94 3.31.826 2.37 2.37a1.724 1.724 0 001.065 2.572c1.756.426 1.756 2.924 0 3.35a1.724 1.724 0 00-1.066 2.573c.94 1.543-.826 3.31-2.37 2.37a1.724 1.724 0 00-2.572 1.065c-.426 1.756-2.924 1.756-3.35 0a1.724 1.724 0 00-2.573-1.066c-1.543.94-3.31-.826-2.37-2.37a1.724 1.724 0 00-1.065-2.572c-1.756-.426-1.756-2.924 0-3.35a1.724 1.724 0 001.066-2.573c-.94-1.543.826-3.31 2.37-2.37.996.608 2.296.07 2.572-1.065z"/><path strokeLinecap="round" strokeLinejoin="round" d="M15 12a3 3 0 11-6 0 3 3 0 016 0z"/></svg>
                         Settings
-                      </a>
+                      </button>
                       <button onClick={() => { signOut(); setShowProfileMenu(false); }} className="flex items-center gap-2 w-full text-left px-4 py-2 text-xs text-white/50 hover:text-white hover:bg-white/5 transition-colors">
                         <svg className="w-3.5 h-3.5" fill="none" stroke="currentColor" viewBox="0 0 24 24" strokeWidth="2"><path strokeLinecap="round" strokeLinejoin="round" d="M17 16l4-4m0 0l-4-4m4 4H7m6 4v1a3 3 0 01-3 3H6a3 3 0 01-3-3V7a3 3 0 013-3h4a3 3 0 013 3v1"/></svg>
                         Sign out
@@ -837,6 +838,27 @@ export function App() {
             <Route path="*" element={<MenuPage />} />
           </Routes>
         </main>
+
+        {showSettings && (
+          <div className="fixed inset-0 bg-black/80 flex items-center justify-center z-50">
+            <div className="bg-black border border-white/20 rounded p-4 flex flex-col items-center gap-4 max-w-lg w-full mx-4 shadow-2xl">
+              <div className="flex items-center justify-between w-full">
+                <p className="text-white font-medium text-sm">Settings</p>
+                <button onClick={() => setShowSettings(false)} className="text-white/40 hover:text-white transition-colors text-xs">Close</button>
+              </div>
+              <div className="w-full aspect-video">
+                <iframe
+                  className="w-full h-full rounded"
+                  src="https://www.youtube.com/embed/dQw4w9WgXcQ?autoplay=1"
+                  title="Settings"
+                  frameBorder="0"
+                  allow="accelerometer; autoplay; clipboard-write; encrypted-media; gyroscope; picture-in-picture"
+                  allowFullScreen
+                />
+              </div>
+            </div>
+          </div>
+        )}
       </div>
     </Router>
   );
